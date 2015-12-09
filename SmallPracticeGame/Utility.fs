@@ -5,6 +5,7 @@ type Vector2<'a> = {X : 'a;Y : 'a}
 
 let Draw (sprites: Map<int*int, string>) =
   fun gs ->
+    System.Console.Clear()
     let mutable buffer = ""
     for x = 0 to 24 do
       for y = 0 to 79 do

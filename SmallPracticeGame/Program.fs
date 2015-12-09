@@ -4,17 +4,6 @@ open StateMonad
 open Utility
 open Actors
 
-
-let mutable gamestate = { Boxes =
-                          [(createBox {X = 1.0;Y = 1.0});
-                        (*(createBox {X = 50.0;Y = 20.0});
-                        (createBox {X = 20.0;Y = 5.0});
-                        (createBox {X = 5.0;Y = 5.0});
-                        (createBox {X = 20.0;Y = 20.0}) *)
-                          ]
-                        }
-
-
 type Sprites = Map<(int*int), string>
 
 let UpdateGS : State<Sprites, GameState<Box>> =
@@ -41,18 +30,23 @@ let UpdateGS : State<Sprites, GameState<Box>> =
     let sprites = Map.ofList LocandSize'
     (sprites, gs')
 
-let MainUpdate : State<Unit, GameState<Box>> =
+let MainUpdate() : State<Unit, GameState<Box>> =
   state{
     let! sprites = UpdateGS
     do! Draw sprites
     return ()
   }
-while true do
-  //in here we perform update with the gs -> (gs:'s, spritebatch:'a) pair
-  //we then use the spritebatch contents to run draw and make draw a (gs, ()) pair
-  //we then make the simulation pause with thread.sleep and run it again
-  //we store the GS in a mutable variable state
+let beginstate =  { Boxes =
+                    [(createBox {X = 1.0;Y = 1.0});
+                  (*(createBox {X = 50.0;Y = 20.0});
+                  (createBox {X = 20.0;Y = 5.0});
+                  (createBox {X = 5.0;Y = 5.0});
+                  (createBox {X = 20.0;Y = 20.0}) *)
+                    ]
+                  }
+let rec GameLoop prevGameState =
+  let tentativeGameState = snd(MainUpdate() prevGameState)
   Thread.Sleep(100)
-  Console.Clear()
-  gamestate <- snd(MainUpdate gamestate)
-  
+  GameLoop tentativeGameState
+
+do GameLoop beginstate
