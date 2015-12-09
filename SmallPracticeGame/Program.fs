@@ -44,7 +44,7 @@ let UpdateGS : State<Sprites, GameState<Box>> =
 let MainUpdate : State<Unit, GameState<Box>> =
   state{
     let! sprites = UpdateGS
-    let! _ = Draw sprites
+    do! Draw sprites
     return ()
   }
 while true do

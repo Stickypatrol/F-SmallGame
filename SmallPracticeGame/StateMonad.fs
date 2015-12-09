@@ -7,7 +7,7 @@ type GameState<'a> =
     Boxes : List<'a>
   }
 
-let ret a = fun s -> (a, s)
+let ret a = fun s -> a, s
 
 let bind (p:State<'a, 's>) (k:'a -> State<'b, 's>) : State<'b, 's> =
   fun s ->
