@@ -18,5 +18,6 @@ let (>>=) = bind
 
 type StateBuilder() =
   member this.Return(a) = ret a
+  member this.ReturnFrom(s) = s
   member this.Bind(p,k) = p >>= k
 let state = StateBuilder()
