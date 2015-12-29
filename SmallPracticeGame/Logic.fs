@@ -1,19 +1,21 @@
 ﻿module Logic
 
-open StateMonad
 open Utility
 open Actors
+open CstateMonad
+open Microsoft.Xna.Framework.Input
 
-let Positions : State<(Vector2<int>*Vector2<int>) list, GameState<Box>> =
+
+let Positions : Cstate<(Vector2<int>*Vector2<int>) list, GameState<Box>> =
   fun gs ->
-    let gs' = {gs with Boxes = [for x in gs.Boxes -> x.Move]}
-    let LocandSize =  [for x in gs'.Boxes ->
-                          {X = int <| x.Pos.X;Y = int <| x.Pos.Y},
-                          {X = int <| x.Size.X;Y = int <| x.Size.Y}
+    let gs' = {gs with Players = [for box in gs.Players -> box.Translate]}
+    let LocandSize =  [for box in gs'.Players ->
+                          {X = int <| box.Pos.X;Y = int <| box.Pos.Y},
+                          {X = int <| box.Size.X;Y = int <| box.Size.Y}
                       ]
-    (LocandSize,gs')
+    Done(LocandSize,gs')
 
-let makeSprites dimensions :State<Map<(int*int), string> , GameState<Box>> =
+let makeSprites dimensions :Cstate<Map<(int*int), string> , GameState<Box>> =
   fun gs ->
     let looper loc size =
       [
@@ -30,9 +32,9 @@ let makeSprites dimensions :State<Map<(int*int), string> , GameState<Box>> =
                 createList t xs'
     let LocandSize' = createList dimensions []
     let sprites = Map.ofList LocandSize'
-    (sprites, gs)
+    Done(sprites, gs)
 
-let Draw (sprites: Map<int*int, string>) : State<Unit, GameState<Box>>=
+let Draw (sprites: Map<int*int, string>) : Cstate<Unit, GameState<Box>>=
   fun gs ->
     System.Console.Clear()
     let mutable buffer = ""
@@ -47,4 +49,4 @@ let Draw (sprites: Map<int*int, string>) : State<Unit, GameState<Box>>=
           | Some x -> buffer <- buffer + x
           | None -> buffer <- buffer + " "
     printf "%s" buffer
-    ((), gs)
+    Done((), gs)
